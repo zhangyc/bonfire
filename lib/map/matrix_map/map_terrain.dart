@@ -115,7 +115,7 @@ class TerrainSpriteSheet {
     );
   }
 }
-
+///随机范围
 class _RandomRange {
   final int start;
   final int end;
@@ -131,16 +131,16 @@ class _RandomRange {
     return 'RandomRange{start: $start, end: $end}';
   }
 }
-
+///地图地形类
 class MapTerrain {
-  final double value;
-  final List<TileModelSprite> sprites;
-  final List<double> spritesProportion;
-  final String? type;
-  final Map<String, dynamic>? properties;
-  final List<CollisionArea>? collisions;
-  final bool collisionOnlyCloseCorners;
-  final List<_RandomRange> _rangeProportion = [];
+  final double value; ///值
+  final List<TileModelSprite> sprites; ///精灵
+  final List<double> spritesProportion; ///精灵位置
+  final String? type; ///类型
+  final Map<String, dynamic>? properties; ///属性
+  final List<CollisionArea>? collisions; ///碰撞集合
+  final bool collisionOnlyCloseCorners; ///碰撞只关闭角落
+  final List<_RandomRange> _rangeProportion = [];  ///随机范围
 
   MapTerrain({
     required this.value,

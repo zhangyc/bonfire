@@ -15,6 +15,7 @@ dependencies:
   http: ^0.13.5
   a_star_algorithm: ^0.3.0
   spine_core:
+  flutter_cache_manager: ^3.3.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

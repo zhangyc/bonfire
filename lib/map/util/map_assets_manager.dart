@@ -1,9 +1,17 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:bonfire/bonfire.dart';
+import 'package:bonfire/map/util/ex_images.dart';
 import 'package:bonfire/util/controlled_update_animation.dart';
+import 'package:flame/cache.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:http/http.dart' as http;
+var cacheManager = DefaultCacheManager();
+Images exImages=Images(prefix: '');
 
 class MapAssetsManager {
   static final Map<String, Sprite> spriteCache = {};
@@ -111,14 +119,15 @@ class MapAssetsManager {
   static Future<Image> loadImage(
     String image,
   ) async {
+
+
+    ///如果是网络资源，则进行
     final fromServer = image.contains('http');
     if (_imageCache.containsKey(image)) {
       return Future.value(_imageCache[image]);
     }
     if (fromServer) {
-      final response = await http.get(Uri.parse(image));
-      String img64 = base64Encode(response.bodyBytes);
-      return _imageCache[image] = await Flame.images.fromBase64(image, img64);
+      return _imageCache[image] = await exImages.loadS3Image(image);
     } else {
       return _imageCache[image] = await Flame.images.load(image);
     }

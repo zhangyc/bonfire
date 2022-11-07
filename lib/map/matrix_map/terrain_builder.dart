@@ -2,6 +2,7 @@ import 'package:bonfire/map/base/tile_model.dart';
 import 'package:bonfire/map/matrix_map/matrix_map_generator.dart';
 import 'package:bonfire/util/functions.dart';
 import 'package:bonfire/util/pair.dart';
+import 'package:flutter/foundation.dart';
 
 ///
 /// Created by
@@ -15,57 +16,64 @@ import 'package:bonfire/util/pair.dart';
 /// Rafaelbarbosatec
 /// on 01/06/22
 
-/// Class responsible to create tiles map with SpriteSheet.
+/// Class responsible to create tiles map with SpriteSheet. 负责使用 SpriteSheet 创建图块地图的类。
+/// 地形生成器
+int i=0;
 class TerrainBuilder {
-  final double tileSize;
-  final List<MapTerrain> terrainList;
+  final double tileSize;   ///瓦片大小
+  final List<MapTerrain> terrainList;  ///地形集合
 
   TerrainBuilder({required this.tileSize, required this.terrainList});
-
+  ///构建方法
   TileModel build(ItemMatrixProperties prop) {
+    ///获取value相同的集合
     Iterable<MapTerrain> findList = terrainList.where(
       (element) => element.value == prop.value,
     );
-
+    ///如果为空。构建默认的
     if (findList.isEmpty) {
       return _buildDefault(prop);
     }
-
+    ///
     try {
+      ///判断是否为中心瓦片,
       if (prop.isCenterTile) {
+        if (kDebugMode) {
+          print(prop);
+
+        }
         MapTerrain terrain = findList.where((element) {
           return element is! MapTerrainCorners;
-        }).first;
-        return _buildTile(terrain, prop);
+        }).first; ///获取地形中不是角落的地形的第一位
+        return _buildTile(terrain, prop); ///构建中间的瓦片
       } else {
-        return _buildTileCorner(findList, prop);
+        return _buildTileCorner(findList, prop); ///构建角落的
       }
     } catch (e) {
-      return _buildDefault(prop);
+      return _buildDefault(prop);///发生意外，构建默认的
     }
   }
-
+  ///构建角落的瓦片，
   TileModel _buildTileCorner(
-    Iterable<MapTerrain> terrains,
-    ItemMatrixProperties prop,
+    Iterable<MapTerrain> terrains, ///地形集合
+    ItemMatrixProperties prop, ///地形属性，
   ) {
-    TileModelSprite? sprite;
-    Iterable<MapTerrainCorners> corners =
-        terrains.whereType<MapTerrainCorners>();
+    TileModelSprite? sprite; ///精灵
+    Iterable<MapTerrainCorners> corners = terrains.whereType<MapTerrainCorners>(); ///角落集合
 
-    MapTerrain? terrain;
+    MapTerrain? terrain; ///地形对象
 
-    final corner = _handleTopCorners(corners, prop);
+    final corner = _handleTopCorners(corners, prop); ///处理当前瓦片上面的瓦片
     sprite = corner.first;
     terrain = corner.second;
 
     if (sprite == null) {
-      final corner = _handleBottomCorners(corners, prop);
+      final corner = _handleBottomCorners(corners, prop);///处理当前瓦片下面的
       sprite = corner.first;
       terrain = corner.second;
     }
 
-    if (sprite == null) {
+    if (sprite == null) { ///如果精灵为空
       MapTerrainCorners? left = firstWhere(
         corners,
         (element) => element.to == prop.valueLeft,
@@ -121,9 +129,9 @@ class TerrainBuilder {
         sprite = terrain.getSingleSprite();
       }
     }
-
+    ///返回TileModel，根据矩阵的属性值
     return TileModel(
-      x: prop.position.x,
+      x: prop.position.x, ///
       y: prop.position.y,
       width: tileSize,
       height: tileSize,
@@ -136,13 +144,13 @@ class TerrainBuilder {
 
   TileModel _buildTile(MapTerrain terrain, ItemMatrixProperties prop) {
     return TileModel(
-      x: prop.position.x,
+      x: prop.position.x, ///位置x
       y: prop.position.y,
       width: tileSize,
       height: tileSize,
-      sprite: terrain.getSingleSprite(),
-      properties: terrain.properties,
-      collisions: terrain.getCollisionClone(checkOnlyClose: true),
+      sprite: terrain.getSingleSprite(),///精灵
+      properties: terrain.properties,  ///属性
+      collisions: terrain.getCollisionClone(checkOnlyClose: true), ///碰撞集合
       type: terrain.type,
     );
   }
@@ -155,7 +163,7 @@ class TerrainBuilder {
       height: tileSize,
     );
   }
-
+  ///处理底角
   Pair<TileModelSprite?, MapTerrain?> _handleBottomCorners(
     Iterable<MapTerrainCorners> corners,
     ItemMatrixProperties prop,
@@ -216,7 +224,7 @@ class TerrainBuilder {
 
     return Pair<TileModelSprite?, MapTerrain?>(sprite, terrain);
   }
-
+  ///处理顶角
   Pair<TileModelSprite?, MapTerrain?> _handleTopCorners(
     Iterable<MapTerrainCorners> corners,
     ItemMatrixProperties prop,

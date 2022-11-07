@@ -35,6 +35,7 @@ class _RandomMapGameState extends State<RandomMapGame> {
       builder: (context, constraints) {
         DungeonMap.tileSize = max(constraints.maxHeight, constraints.maxWidth) /
             (kIsWeb ? 25 : 22);
+
         if (_mapGenerator == null) {
           _mapGenerator = MapGenerator(widget.size, DungeonMap.tileSize);
         }
